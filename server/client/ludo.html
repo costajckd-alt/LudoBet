@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="pt">
+
+<head>
+
+  <meta charset="UTF-8">
+  <title>LudoBet</title>
+
+  <style>
+
+    body{
+      background:#121212;
+      color:white;
+      font-family:Arial;
+      text-align:center;
+    }
+
+    h1{
+      color:#00e676;
+      margin-top:20px;
+    }
+
+    .card{
+      background:#1e1e1e;
+      width:450px;
+      margin:20px auto;
+      padding:20px;
+      border-radius:15px;
+    }
+
+    #perfil{
+      margin-bottom:20px;
+    }
+
+    #avatar{
+      border-radius:50%;
+      border:4px solid #00e676;
+    }
+
+    #saldo{
+      font-size:22px;
+      margin:15px;
+    }
+
+    #board{
+      width:600px;
+      height:600px;
+      margin:20px auto;
+      display:grid;
+      grid-template-columns:repeat(15,1fr);
+      grid-template-rows:repeat(15,1fr);
+      gap:1px;
+      background:#444;
+    }
+
+    .cell{
+      background:white;
+      width:100%;
+      height:100%;
+    }
+
+    .green{ background:green; }
+    .red{ background:red; }
+    .yellow{ background:gold; }
+    .blue{ background:blue; }
+
+    button{
+      padding:12px 25px;
+      margin:10px;
+      border:none;
+      border-radius:10px;
+      background:#00c853;
+      color:white;
+      font-size:16px;
+      cursor:pointer;
+    }
+
+    button:hover{
+      background:#00e676;
+    }
+
+    input{
+      padding:10px;
+      margin:5px;
+      border:none;
+      border-radius:8px;
+      font-size:16px;
+    }
+
+    #dice{
+      width:120px;
+      height:120px;
+      background:white;
+      color:black;
+      margin:20px auto;
+      border-radius:15px;
+      font-size:50px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      transition:0.3s;
+    }
+
+    #status{
+      margin-top:15px;
+      font-size:20px;
+      color:cyan;
+    }
+
+    #ranking{
+      margin:20px;
+    }
+
+  </style>
+
+</head>
+
+<body>
+
+<div class="card">
+
+<h1>🎲 LudoBet</h1>
+
+<div id="perfil">
+
+  <img
+    id="avatar"
+    src="https://i.imgur.com/6VBx3io.png"
+    width="100"
+  >
+
+  <h2 id="perfilNome">
+    Jogador
+  </h2>
+
+</div>
+
+<input
+  type="text"
+  id="username"
+  placeholder="Seu nome"
+/>
+
+<button onclick="salvarNome()">
+  Salvar Nome
+</button>
+
+<h2 id="saldo">💰 Saldo: 0</h2>
+
+<h2>🏆 Ranking</h2>
+
+<div id="ranking"></div>
+
+<button onclick="carregarRanking()">
+  Atualizar Ranking
+</button>
+
+<div id="controls">
+
+  <input
+    type="text"
+    id="room"
+    placeholder="Sala"
+  >
+
+  <button onclick="entrarSala()">
+    Entrar
+  </button>
+
+  <button onclick="rolarDado()">
+    🎲 Rolar Dado
+  </button>
+
+  <div id="dice">-</div>
+
+  <div id="status">
+    Aguardando sala...
+  </div>
+
+  <hr>
+
+  <h2>💬 Chat Global</h2>
+
+  <div
+    id="chat"
+    style="
+      height:200px;
+      overflow:auto;
+      background:#111;
+      padding:10px;
+      border-radius:10px;
+      text-align:left;
+    "
+  ></div>
+
+  <input
+    type="text"
+    id="mensagem"
+    placeholder="Mensagem"
+  />
+
+  <button onclick="enviarMensagem()">
+    Enviar
+  </button>
+
+</div>
+
+</div>
+
+<div id="board"></div>
+
+<script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+
+<script>
+
+const somDado =
+  new Audio(
+    "https://www.soundjay.com/dice/dice-throw-1.mp3"
+  );
+
+const token =
+  localStorage.getItem("token");
+
+if(!token){
+
+  window.location.href =
+    "/login.html";
+}
+
+let playerId =
+  localStorage.getItem("playerId");
+
+if(!playerId){
+
+  playerId =
+    "player_" +
+    Math.random().toString(36).substring(2);
+
+  localStorage.setItem(
+    "playerId",
+    playerId
+  );
+}
+
+const socket = io(
+  "http://localhost:3000",
+  {
+    auth:{
+      playerId
+    }
+  }
+);
+
+let username =
+  localStorage.getItem("username") || "";
+
+document.addEventListener(
+  "DOMContentLoaded",
+  () => {
+
+    document.getElementById(
+      "perfilNome"
+    ).innerHTML =
+      username || "Jogador";
+
+    document
+      .getElementById("username")
+      .value = username;
+
+    carregarRanking();
+  }
+);
+
+function salvarNome(){
+
+  username =
+    document
+      .getElementById("username")
+      .value;
+
+  localStorage.setItem(
+    "username",
+    username
+  );
+
+  socket.emit(
+    "salvar_nome",
+    username
+  );
+
+  document.getElementById(
+    "perfilNome"
+  ).innerHTML = username;
+
+  alert("✅ Nome salvo!");
+
+  carregarRanking();
+}
+
+function carregarRanking(){
+
+  socket.emit("pedir_ranking");
+}
+
+socket.on("ranking", (lista) => {
+
+  const div =
+    document.getElementById("ranking");
+
+  div.innerHTML = "";
+
+  lista.forEach((user, index) => {
+
+    div.innerHTML += `
+      <p>
+        ${index + 1}.
+        🧑 ${user.nome}
+        | 🏆 ${user.vitorias}
+        | ❌ ${user.derrotas}
+      </p>
+    `;
+  });
+});
+
+let salaAtual = "";
+let jogadores = [];
+let turnoAtual = 0;
+
+function criarTabuleiro(){
+
+  const board =
+    document.getElementById("board");
+
+  board.innerHTML = "";
+
+  for(let i=0;i<225;i++){
+
+    const cell =
+      document.createElement("div");
+
+    cell.classList.add("cell");
+
+    if(i < 36) cell.classList.add("green");
+    if(i > 188) cell.classList.add("blue");
+    if(i % 15 < 3 && i > 150) cell.classList.add("red");
+    if(i % 15 > 11 && i < 75) cell.classList.add("yellow");
+
+    board.appendChild(cell);
+  }
+}
+
+criarTabuleiro();
+
+const pecas = {};
+const posicoes = {};
+
+function entrarSala(){
+
+  salaAtual =
+    document.getElementById("room").value;
+
+  if(!salaAtual){
+
+    alert("Digite uma sala!");
+    return;
+  }
+
+  socket.emit(
+    "entrar_sala",
+    salaAtual
+  );
+
+  document.getElementById("status")
+    .innerHTML =
+    "⏳ Entrando na sala...";
+}
+
+function rolarDado(){
+
+  somDado.play();
+
+  const dice =
+    document.getElementById("dice");
+
+  dice.style.transform =
+    "rotate(360deg)";
+
+  if(jogadores.length < 2){
+
+    alert("⏳ Esperando outro jogador!");
+    return;
+  }
+
+  if(jogadores[turnoAtual] !== playerId){
+
+    alert("❌ Não é a tua vez!");
+    return;
+  }
+
+  dice.innerHTML = "🎲";
+
+  const numero =
+    Math.floor(Math.random()*6)+1;
+
+  socket.emit(
+    "jogada",
+    {
+      roomId:salaAtual,
+      jogada:numero
+    }
+  );
+}
+
+socket.on("saldo", (data) => {
+
+  document.getElementById("saldo")
+    .innerHTML =
+    "💰 Saldo: " + data.saldo;
+});
+
+socket.on("estado_sala", (data) => {
+
+  jogadores = data.players;
+  turnoAtual = data.turno;
+
+  if(jogadores.length < 2){
+
+    document.getElementById("status")
+      .innerHTML =
+      "⏳ Esperando jogador...";
+  }
+  else{
+
+    if(jogadores[turnoAtual] === playerId){
+
+      document.getElementById("status")
+        .innerHTML =
+        "🎯 Sua vez!";
+    }
+    else{
+
+      document.getElementById("status")
+        .innerHTML =
+        "⌛ Vez do adversário";
+    }
+  }
+});
+
+socket.on("jogada_recebida",(data)=>{
+
+  document.getElementById("dice")
+    .innerHTML =
+    "🎲 " + data.jogada;
+
+  const jogador = data.jogador;
+
+  if(!pecas[jogador]){
+
+    const peca =
+      document.createElement("div");
+
+    peca.style.width = "25px";
+    peca.style.height = "25px";
+    peca.style.borderRadius = "50%";
+    peca.style.margin = "auto";
+    peca.style.marginTop = "5px";
+
+    const cores = [
+      "white",
+      "cyan",
+      "lime",
+      "orange",
+      "pink"
+    ];
+
+    peca.style.background =
+      cores[
+        Object.keys(pecas).length %
+        cores.length
+      ];
+
+    pecas[jogador] = peca;
+
+    posicoes[jogador] = 0;
+  }
+
+  posicoes[jogador] += data.jogada;
+
+  moverPeca(jogador);
+});
+
+function enviarMensagem(){
+
+  const msg =
+    document.getElementById(
+      "mensagem"
+    ).value;
+
+  if(!msg) return;
+
+  socket.emit(
+    "chat_mensagem",
+    msg
+  );
+
+  document.getElementById(
+    "mensagem"
+  ).value = "";
+}
+
+socket.on(
+  "chat_mensagem",
+  (data) => {
+
+    const chat =
+      document.getElementById("chat");
+
+    chat.innerHTML += `
+      <p>
+        💬 <b>${data.jogador}</b>:
+        ${data.mensagem}
+      </p>
+    `;
+
+    chat.scrollTop =
+      chat.scrollHeight;
+  }
+);
+
+function moverPeca(jogador){
+
+  const casas =
+    document.querySelectorAll(".cell");
+
+  const peca =
+    pecas[jogador];
+
+  casas.forEach(c => {
+
+    if(c.contains(peca)){
+      c.removeChild(peca);
+    }
+  });
+
+  if(posicoes[jogador] >= casas.length){
+    posicoes[jogador] = 0;
+  }
+
+  casas[
+    posicoes[jogador]
+  ].appendChild(peca);
+}
+
+socket.on("fim_jogo", (data) => {
+
+  carregarRanking();
+
+  if(data.vencedor === playerId){
+
+    alert("🏆 Você venceu!");
+  }
+  else{
+
+    alert("❌ Você perdeu!");
+  }
+
+  location.reload();
+});
+
+socket.on(
+  "saldo_insuficiente",
+  () => {
+    alert("❌ Saldo insuficiente!");
+  }
+);
+
+socket.on(
+  "nao_e_sua_vez",
+  () => {
+    alert("❌ Não é a tua vez!");
+  }
+);
+
+socket.on(
+  "ja_na_sala",
+  () => {
+    alert("❌ Você já está nessa sala!");
+  }
+);
+
+socket.on(
+  "sala_cheia",
+  () => {
+    alert("❌ Sala cheia!");
+  }
+);
+
+socket.on(
+  "partida_iniciada",
+  () => {
+    alert("❌ Partida já iniciada!");
+  }
+);
+
+</script>
+
+</body>
+
+</html>

@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>LudoBet Login</title>
+</head>
+
+<style>
+
+body{
+  background: #121212;
+  color: white;
+  font-family: Arial;
+  text-align: center;
+  padding-top: 50px;
+}
+
+.container{
+  width: 350px;
+  margin: auto;
+  background: #1e1e1e;
+  padding: 30px;
+  border-radius: 15px;
+}
+
+input{
+  width: 90%;
+  padding: 12px;
+  margin: 10px;
+  border: none;
+  border-radius: 8px;
+}
+
+button{
+  width: 95%;
+  padding: 12px;
+  margin-top: 10px;
+  background: #00c853;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+button:hover{
+  background: #00e676;
+}
+
+hr{
+  margin: 30px 0;
+  border-color: #333;
+}
+
+</style>
+
+<body>
+
+    <div class="container">
+
+  <h1>LudoBet</h1>
+
+  <h2>Registrar</h2>
+
+  <input id="nome" placeholder="Nome">
+  <input id="email" placeholder="Email">
+  <input id="password" type="password" placeholder="Senha">
+
+  <button onclick="registrar()">
+    Registrar
+  </button>
+
+  <hr>
+
+  <h2>Login</h2>
+
+  <input id="loginEmail" placeholder="Email">
+  <input id="loginPassword" type="password" placeholder="Senha">
+
+  <button onclick="login()">
+    Entrar
+  </button>
+
+  <script>
+
+    async function registrar(){
+
+      const nome =
+        document.getElementById("nome").value;
+
+      const email =
+        document.getElementById("email").value;
+
+      const password =
+        document.getElementById("password").value;
+
+      const resposta = await fetch(
+        "/register",
+        {
+          method: "POST",
+
+          headers: {
+            "Content-Type":
+              "application/json"
+          },
+
+          body: JSON.stringify({
+            nome,
+            email,
+            password
+          })
+        }
+      );
+
+      const dados =
+        await resposta.json();
+
+      if(dados.sucesso){
+
+        alert("Conta criada");
+      }
+      else{
+
+        alert("Erro ao registrar");
+      }
+    }
+
+    async function login(){
+
+      const email =
+        document.getElementById(
+          "loginEmail"
+        ).value;
+
+      const password =
+        document.getElementById(
+          "loginPassword"
+        ).value;
+
+      const resposta = await fetch(
+        "/login",
+        {
+          method: "POST",
+
+          headers: {
+            "Content-Type":
+              "application/json"
+          },
+
+          body: JSON.stringify({
+            email,
+            password
+          })
+        }
+      );
+
+      const dados =
+        await resposta.json();
+
+      if(dados.sucesso){
+
+        localStorage.setItem(
+          "token",
+          dados.token
+        );
+
+        alert("Login feito");
+
+        window.location.href =
+          "/ludo.html";
+      }
+      else{
+
+        alert("Login inválido");
+      }
+    }
+
+  </script>
+
+  </div>
+
+</body>
+
+</html>

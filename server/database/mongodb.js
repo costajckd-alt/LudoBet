@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 
 mongoose.connect(
-  "mongodb://127.0.0.1:27017/ludobet"
+  "mongodb+srv://costajc_kd_user:Namirdo8002@cluster0.pyzgezf.mongodb.net/ludobet?retryWrites=true&w=majority&appName=Cluster0"
 )
 .then(() => {
   console.log("MongoDB conectado");

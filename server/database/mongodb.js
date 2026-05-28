@@ -7,6 +7,7 @@ mongoose.connect(
   console.log("MongoDB conectado");
 })
 .catch((err) => {
+  console.log("ERRO MONGODB:");
   console.log(err);
 });
 

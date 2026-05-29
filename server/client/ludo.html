@@ -3,137 +3,122 @@
 
 <head>
 
-  <meta charset="UTF-8">
-  <title>LudoBet</title>
+<meta charset="UTF-8">
 
-  <style>
+<title>LudoBet</title>
 
-    body{
-      background:#121212;
-      color:white;
-      font-family:Arial;
-      text-align:center;
-    }
+<style>
 
-    h1{
-      color:#00e676;
-      margin-top:20px;
-    }
+body{
+  background:#121212;
+  color:white;
+  font-family:Arial;
+  text-align:center;
+  margin:0;
+  padding:0;
+}
 
-    .card{
-      background:#1e1e1e;
-      width:450px;
-      margin:20px auto;
-      padding:20px;
-      border-radius:15px;
-    }
+h1{
+  color:#00e676;
+  margin-top:20px;
+}
 
-    #perfil{
-      margin-bottom:20px;
-    }
+.card{
+  background:#1e1e1e;
+  width:420px;
+  margin:20px auto;
+  padding:20px;
+  border-radius:15px;
+}
 
-    #avatar{
-      border-radius:50%;
-      border:4px solid #00e676;
-    }
+#saldo{
+  font-size:22px;
+  margin:15px;
+}
 
-    #saldo{
-      font-size:22px;
-      margin:15px;
-    }
+button{
+  padding:12px 25px;
+  margin:10px;
+  border:none;
+  border-radius:10px;
+  background:#00c853;
+  color:white;
+  font-size:16px;
+  cursor:pointer;
+}
 
-    #board{
-      width:600px;
-      height:600px;
-      margin:20px auto;
-      display:grid;
-      grid-template-columns:repeat(15,1fr);
-      grid-template-rows:repeat(15,1fr);
-      gap:1px;
-      background:#444;
-    }
+button:hover{
+  background:#00e676;
+}
 
-    .cell{
-      background:white;
-      width:100%;
-      height:100%;
-    }
+input{
+  padding:10px;
+  border-radius:8px;
+  border:none;
+}
 
-    .green{ background:green; }
-    .red{ background:red; }
-    .yellow{ background:gold; }
-    .blue{ background:blue; }
+#board{
+  width:600px;
+  height:600px;
+  margin:20px auto;
+  display:grid;
+  grid-template-columns:repeat(15,1fr);
+  grid-template-rows:repeat(15,1fr);
+  gap:1px;
+  background:#444;
+}
 
-    button{
-      padding:12px 25px;
-      margin:10px;
-      border:none;
-      border-radius:10px;
-      background:#00c853;
-      color:white;
-      font-size:16px;
-      cursor:pointer;
-    }
+.cell{
+  background:white;
+  width:100%;
+  height:100%;
+}
 
-    button:hover{
-      background:#00e676;
-    }
+.green{ background:green; }
+.red{ background:red; }
+.yellow{ background:gold; }
+.blue{ background:blue; }
 
-    input{
-      padding:10px;
-      margin:5px;
-      border:none;
-      border-radius:8px;
-      font-size:16px;
-    }
+#dice{
+  width:120px;
+  height:120px;
+  background:white;
+  color:black;
+  margin:20px auto;
+  border-radius:15px;
+  font-size:45px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  transition:0.7s;
+}
 
-    #dice{
-      width:120px;
-      height:120px;
-      background:white;
-      color:black;
-      margin:20px auto;
-      border-radius:15px;
-      font-size:50px;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      transition:0.3s;
-    }
+#status{
+  margin-top:15px;
+  font-size:20px;
+  color:cyan;
+}
 
-    #status{
-      margin-top:15px;
-      font-size:20px;
-      color:cyan;
-    }
+#ranking{
+  margin:20px;
+}
 
-    #ranking{
-      margin:20px;
-    }
-
-  </style>
+</style>
 
 </head>
 
 <body>
 
-<div class="card">
+  <audio id="diceSound">
+  <source
+    src="https://assets.mixkit.co/active_storage/sfx/2000/2000-preview.mp3"
+    type="audio/mpeg"
+  >
+</audio>
 
 <h1>🎲 LudoBet</h1>
 
-<div id="perfil">
-
-  <img
-    id="avatar"
-    src="https://i.imgur.com/6VBx3io.png"
-    width="100"
-  >
-
-  <h2 id="perfilNome">
-    Jogador
-  </h2>
-
-</div>
+<div class="card">
 
 <input
   type="text"
@@ -145,7 +130,9 @@
   Salvar Nome
 </button>
 
-<h2 id="saldo">💰 Saldo: 0</h2>
+<h2 id="saldo">
+  💰 Saldo: 0
+</h2>
 
 <h2>🏆 Ranking</h2>
 
@@ -155,54 +142,28 @@
   Atualizar Ranking
 </button>
 
-<div id="controls">
+<input
+  type="text"
+  id="room"
+  placeholder="Sala"
+/>
 
-  <input
-    type="text"
-    id="room"
-    placeholder="Sala"
-  >
+<br>
 
-  <button onclick="entrarSala()">
-    Entrar
-  </button>
+<button onclick="entrarSala()">
+  Entrar
+</button>
 
-  <button onclick="rolarDado()">
-    🎲 Rolar Dado
-  </button>
+<button onclick="rolarDado()">
+  🎲 Rolar Dado
+</button>
 
-  <div id="dice">-</div>
+<div id="dice">
+  🎲
+</div>
 
-  <div id="status">
-    Aguardando sala...
-  </div>
-
-  <hr>
-
-  <h2>💬 Chat Global</h2>
-
-  <div
-    id="chat"
-    style="
-      height:200px;
-      overflow:auto;
-      background:#111;
-      padding:10px;
-      border-radius:10px;
-      text-align:left;
-    "
-  ></div>
-
-  <input
-    type="text"
-    id="mensagem"
-    placeholder="Mensagem"
-  />
-
-  <button onclick="enviarMensagem()">
-    Enviar
-  </button>
-
+<div id="status">
+  Aguardando sala...
 </div>
 
 </div>
@@ -211,12 +172,33 @@
 
 <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
 
-<script>
+function enviarMensagem(){
 
-const somDado =
-  new Audio(
-    "https://www.soundjay.com/dice/dice-throw-1.mp3"
-  );
+  const input = document.getElementById("msg");
+
+  const mensagem = input.value;
+
+  if(!mensagem) return;
+
+  socket.emit("chat_mensagem", mensagem);
+
+  input.value = "";
+}
+
+socket.on("chat_mensagem", (data) => {
+
+  const chat = document.getElementById("chat");
+
+  chat.innerHTML += `
+    <p>
+      <b>${data.jogador}:</b>
+      ${data.mensagem}
+    </p>
+  `;
+
+});
+
+<script>
 
 const token =
   localStorage.getItem("token");
@@ -242,14 +224,12 @@ if(!playerId){
   );
 }
 
-const socket = io(
-  "http://localhost:3000",
-  {
-    auth:{
-      playerId
-    }
+const socket = io({
+
+  auth: {
+    playerId
   }
-);
+});
 
 let username =
   localStorage.getItem("username") || "";
@@ -257,11 +237,6 @@ let username =
 document.addEventListener(
   "DOMContentLoaded",
   () => {
-
-    document.getElementById(
-      "perfilNome"
-    ).innerHTML =
-      username || "Jogador";
 
     document
       .getElementById("username")
@@ -288,10 +263,6 @@ function salvarNome(){
     username
   );
 
-  document.getElementById(
-    "perfilNome"
-  ).innerHTML = username;
-
   alert("✅ Nome salvo!");
 
   carregarRanking();
@@ -299,13 +270,17 @@ function salvarNome(){
 
 function carregarRanking(){
 
-  socket.emit("pedir_ranking");
+  socket.emit(
+    "pedir_ranking"
+  );
 }
 
 socket.on("ranking", (lista) => {
 
   const div =
-    document.getElementById("ranking");
+    document.getElementById(
+      "ranking"
+    );
 
   div.innerHTML = "";
 
@@ -322,14 +297,12 @@ socket.on("ranking", (lista) => {
   });
 });
 
-let salaAtual = "";
-let jogadores = [];
-let turnoAtual = 0;
-
 function criarTabuleiro(){
 
   const board =
-    document.getElementById("board");
+    document.getElementById(
+      "board"
+    );
 
   board.innerHTML = "";
 
@@ -340,10 +313,17 @@ function criarTabuleiro(){
 
     cell.classList.add("cell");
 
-    if(i < 36) cell.classList.add("green");
-    if(i > 188) cell.classList.add("blue");
-    if(i % 15 < 3 && i > 150) cell.classList.add("red");
-    if(i % 15 > 11 && i < 75) cell.classList.add("yellow");
+    if(i < 36)
+      cell.classList.add("green");
+
+    if(i > 188)
+      cell.classList.add("blue");
+
+    if(i % 15 < 3 && i > 150)
+      cell.classList.add("red");
+
+    if(i % 15 > 11 && i < 75)
+      cell.classList.add("yellow");
 
     board.appendChild(cell);
   }
@@ -351,17 +331,32 @@ function criarTabuleiro(){
 
 criarTabuleiro();
 
+let salaAtual = "";
+let jogadores = [];
+let turnoAtual = 0;
+
 const pecas = {};
 const posicoes = {};
+
+const caminho = [
+  6,7,8,9,10,25,40,55,70,85,
+  100,115,130,145,160,159,158,
+  157,156,155,140,125,110,95,
+  80,65,50,35,20,21,22,23,24,
+  39,54,69,84,99,114,129,144
+];
 
 function entrarSala(){
 
   salaAtual =
-    document.getElementById("room").value;
+    document.getElementById(
+      "room"
+    ).value;
 
   if(!salaAtual){
 
     alert("Digite uma sala!");
+
     return;
   }
 
@@ -370,34 +365,35 @@ function entrarSala(){
     salaAtual
   );
 
-  document.getElementById("status")
-    .innerHTML =
+  document.getElementById(
+    "status"
+  ).innerHTML =
     "⏳ Entrando na sala...";
 }
 
 function rolarDado(){
 
-  somDado.play();
-
-  const dice =
-    document.getElementById("dice");
-
-  dice.style.transform =
-    "rotate(360deg)";
-
   if(jogadores.length < 2){
 
-    alert("⏳ Esperando outro jogador!");
+    alert(
+      "⏳ Esperando outro jogador!"
+    );
+
     return;
   }
 
-  if(jogadores[turnoAtual] !== playerId){
+  if(
+    jogadores[turnoAtual]
+    !==
+    playerId
+  ){
 
-    alert("❌ Não é a tua vez!");
+    alert(
+      "❌ Não é a tua vez!"
+    );
+
     return;
   }
-
-  dice.innerHTML = "🎲";
 
   const numero =
     Math.floor(Math.random()*6)+1;
@@ -413,99 +409,252 @@ function rolarDado(){
 
 socket.on("saldo", (data) => {
 
-  document.getElementById("saldo")
-    .innerHTML =
+  document.getElementById(
+    "saldo"
+  ).innerHTML =
     "💰 Saldo: " + data.saldo;
 });
 
-socket.on("estado_sala", (data) => {
+socket.on(
+  "estado_sala",
+  (data) => {
 
-  jogadores = data.players;
-  turnoAtual = data.turno;
+    jogadores = data.players;
+    turnoAtual = data.turno;
 
-  if(jogadores.length < 2){
+    if(jogadores.length < 2){
 
-    document.getElementById("status")
-      .innerHTML =
-      "⏳ Esperando jogador...";
-  }
-  else{
-
-    if(jogadores[turnoAtual] === playerId){
-
-      document.getElementById("status")
-        .innerHTML =
-        "🎯 Sua vez!";
+      document.getElementById(
+        "status"
+      ).innerHTML =
+        "⏳ Esperando jogador...";
     }
     else{
 
-      document.getElementById("status")
-        .innerHTML =
-        "⌛ Vez do adversário";
+      if(
+        jogadores[turnoAtual]
+        ===
+        playerId
+      ){
+
+        document.getElementById(
+          "status"
+        ).innerHTML =
+          "🎯 Sua vez!";
+      }
+      else{
+
+        document.getElementById(
+          "status"
+        ).innerHTML =
+          "⌛ Vez do adversário";
+      }
     }
   }
-});
+);
 
-socket.on("jogada_recebida",(data)=>{
+socket.on(
+  "jogada_recebida",
+  (data)=>{
 
-  document.getElementById("dice")
-    .innerHTML =
-    "🎲 " + data.jogada;
+    const dice =
+      document.getElementById(
+        "dice"
+      );
 
-  const jogador = data.jogador;
+      document
+  .getElementById("diceSound")
+  .play();
 
-  if(!pecas[jogador]){
+    dice.innerHTML = "🎲";
 
-    const peca =
-      document.createElement("div");
+    dice.style.transform =
+      "rotate(720deg) scale(1.3)";
 
-    peca.style.width = "25px";
-    peca.style.height = "25px";
-    peca.style.borderRadius = "50%";
-    peca.style.margin = "auto";
-    peca.style.marginTop = "5px";
+    setTimeout(() => {
 
-    const cores = [
-      "white",
-      "cyan",
-      "lime",
-      "orange",
-      "pink"
-    ];
+      dice.innerHTML =
+        "🎲 " + data.jogada;
 
-    peca.style.background =
-      cores[
-        Object.keys(pecas).length %
-        cores.length
+      dice.style.transform =
+        "rotate(0deg) scale(1)";
+        
+    }, 700);
+
+    const jogador =
+      data.jogador;
+
+    if(!pecas[jogador]){
+
+      const peca =
+        document.createElement("div");
+
+      peca.style.width = "25px";
+      peca.style.height = "25px";
+      peca.style.borderRadius = "50%";
+      peca.style.margin = "auto";
+      peca.style.marginTop = "5px";
+
+      const cores = [
+        "white",
+        "cyan",
+        "lime",
+        "orange",
+        "pink"
       ];
 
-    pecas[jogador] = peca;
+      peca.style.background =
+        cores[
+          Object.keys(pecas).length
+          %
+          cores.length
+        ];
+
+      pecas[jogador] = peca;
+
+      posicoes[jogador] = 0;
+    }
+
+    posicoes[jogador] +=
+      data.jogada;
+
+    moverPeca(jogador);
+  }
+);
+
+function moverPeca(jogador){
+
+  const casas =
+    document.querySelectorAll(
+      ".cell"
+    );
+
+  const peca =
+    pecas[jogador];
+
+  casas.forEach(c => {
+
+    if(c.contains(peca)){
+
+      c.removeChild(peca);
+    }
+  });
+
+  if(
+    posicoes[jogador]
+    >=
+    caminho.length
+  ){
+
+    alert("🏆 Vitória!");
 
     posicoes[jogador] = 0;
   }
 
-  posicoes[jogador] += data.jogada;
+  const casaIndex =
+    caminho[
+      posicoes[jogador]
+    ];
 
-  moverPeca(jogador);
-});
+  if(casas[casaIndex]){
+
+    casas[casaIndex]
+      .appendChild(peca);
+  }
+}
+
+socket.on(
+  "fim_jogo",
+  (data) => {
+
+    carregarRanking();
+
+    if(
+      data.vencedor
+      ===
+      playerId
+    ){
+
+      alert("🏆 Você venceu!");
+    }
+    else{
+
+      alert("❌ Você perdeu!");
+    }
+
+    location.reload();
+  }
+);
+
+socket.on(
+  "saldo_insuficiente",
+  () => {
+
+    alert(
+      "❌ Saldo insuficiente!"
+    );
+  }
+);
+
+socket.on(
+  "nao_e_sua_vez",
+  () => {
+
+    alert(
+      "❌ Não é a tua vez!"
+    );
+  }
+);
+
+socket.on(
+  "ja_na_sala",
+  () => {
+
+    alert(
+      "❌ Você já está nessa sala!"
+    );
+  }
+);
+
+socket.on(
+  "sala_cheia",
+  () => {
+
+    alert(
+      "❌ Sala cheia!"
+    );
+  }
+);
+
+socket.on(
+  "partida_iniciada",
+  () => {
+
+    alert(
+      "❌ Partida já iniciada!"
+    );
+  }
+);
 
 function enviarMensagem(){
 
-  const msg =
-    document.getElementById(
-      "mensagem"
-    ).value;
+  const input =
+    document.getElementById("msg");
 
-  if(!msg) return;
+  const mensagem =
+    input.value;
+
+  if(!mensagem) return;
 
   socket.emit(
     "chat_mensagem",
-    msg
+    {
+      nome: username,
+      mensagem
+    }
   );
 
-  document.getElementById(
-    "mensagem"
-  ).value = "";
+  input.value = "";
 }
 
 socket.on(
@@ -513,11 +662,13 @@ socket.on(
   (data) => {
 
     const chat =
-      document.getElementById("chat");
+      document.getElementById(
+        "chat"
+      );
 
     chat.innerHTML += `
       <p>
-        💬 <b>${data.jogador}</b>:
+        <b>${data.nome}:</b>
         ${data.mensagem}
       </p>
     `;
@@ -527,83 +678,118 @@ socket.on(
   }
 );
 
-function moverPeca(jogador){
+function adicionarAmigo(){
 
-  const casas =
-    document.querySelectorAll(".cell");
+  const nome =
+    document.getElementById(
+      "friendName"
+    ).value;
 
-  const peca =
-    pecas[jogador];
-
-  casas.forEach(c => {
-
-    if(c.contains(peca)){
-      c.removeChild(peca);
-    }
-  });
-
-  if(posicoes[jogador] >= casas.length){
-    posicoes[jogador] = 0;
-  }
-
-  casas[
-    posicoes[jogador]
-  ].appendChild(peca);
+  socket.emit(
+    "adicionar_amigo",
+    nome
+  );
 }
 
-socket.on("fim_jogo", (data) => {
-
-  carregarRanking();
-
-  if(data.vencedor === playerId){
-
-    alert("🏆 Você venceu!");
-  }
-  else{
-
-    alert("❌ Você perdeu!");
-  }
-
-  location.reload();
-});
-
 socket.on(
-  "saldo_insuficiente",
-  () => {
-    alert("❌ Saldo insuficiente!");
-  }
-);
+  "resultado_amigo",
+  (sucesso) => {
 
-socket.on(
-  "nao_e_sua_vez",
-  () => {
-    alert("❌ Não é a tua vez!");
-  }
-);
+    const div =
+      document.getElementById(
+        "friendResult"
+      );
 
-socket.on(
-  "ja_na_sala",
-  () => {
-    alert("❌ Você já está nessa sala!");
-  }
-);
+    if(sucesso){
 
-socket.on(
-  "sala_cheia",
-  () => {
-    alert("❌ Sala cheia!");
-  }
-);
+      div.innerHTML =
+        "✅ Amigo adicionado!";
+    }
+    else{
 
-socket.on(
-  "partida_iniciada",
-  () => {
-    alert("❌ Partida já iniciada!");
+      div.innerHTML =
+        "❌ Jogador não encontrado!";
+    }
   }
 );
 
 </script>
 
+<div class="card">
+
+<h2>💬 Chat Global</h2>
+
+<div
+  id="chat"
+  style="
+    height:200px;
+    overflow-y:auto;
+    background:#111;
+    padding:10px;
+    border-radius:10px;
+    text-align:left;
+  "
+></div>
+
+<input
+  type="text"
+  id="msg"
+  placeholder="Digite mensagem..."
+/>
+
+<button onclick="enviarMensagem()">
+  Enviar
+</button>
+
+</div>
+
+<div class="card">
+
+<h2>👥 Amigos</h2>
+
+<input
+  type="text"
+  id="friendName"
+  placeholder="Nome do amigo"
+/>
+
+<button onclick="adicionarAmigo()">
+  Adicionar
+</button>
+
+<div id="friendResult"></div>
+
+</div>
+
 </body>
+
+<div class="card">
+
+<h2>💬 Chat Global</h2>
+
+<div
+  id="chat"
+  style="
+    height:200px;
+    overflow-y:auto;
+    background:#111;
+    padding:10px;
+    border-radius:10px;
+    text-align:left;
+  "
+></div>
+
+<input
+type="text"
+id="msg"
+placeholder="Digite mensagem..."
+/>
+
+<button onclick="enviarMensagem()">
+  Enviar
+</button>
+
+</div>
+
 
 </html>
